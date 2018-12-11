@@ -42,17 +42,41 @@ void insertLinear(v data) {							//Insert Function of Linear Probing Hash
 		int indis = hLinear(data);
 		while (a[indis].k != -1) {
 			indis++;
+			if (indis > 149) {
+				indis = 0;
+			}
 		}
 		a[indis].k = data.k;
 	}
 
 }
+
+//olmayan data
+//doğru yerdeki data
+//collision olmuş data
+
 std::string searchLinear(v data) {					//Search Function of Linear Probing Hash
-	if (a[hLinear(data)].k == -1) {
+	if (a[hLinear(data)].k == -1) {					//non existing data
 		printf("olmayan deger araniyor");
 		return "-1";
 	}
-	return a[hLinear(data)].v;						//retuns value of searched data
+	//Not Collision and existing data
+	else if (a[hLinear(data)].k == data.k && a[hLinear(data)].v == data.v) {
+		return a[hLinear(data)].v;
+	}
+	//Collision case
+	else if (a[hLinear(data)].k == data.k && a[hLinear(data)].v != data.v) {
+		int x = hLinear(data);
+		while (a[x].v != data.v) {					//Goes next slot until the value matches
+			x = x++;
+		}
+		return a[x].v;
+	}
+	//Error case
+	else {
+		std::cout << "Error at search" << std::endl;
+	}
+	return "-1";
 }
 
 void print() {										//Print the table function
@@ -62,16 +86,32 @@ void print() {										//Print the table function
 
 }
 
-
-
-
 int main()
 {
+	v data;
 	for (int i = 0; i < 150; i++) {					//default -1 added to every slot in table
 		a[i].k = -1;
 	}
-	v data;
+	std::ifstream myfile;
+	myfile.open("vocabdeneme.txt");
+	if (!myfile.is_open()) {
+		std::cout << "Error cannot read from the file";
+	}
+	std::string vocab;
+	int line = 0;
+
+	while (!myfile.eof()) {
+		getline(myfile, vocab);
+		data.v = vocab;
+		data.k = line;
+		insertLinear(data);
+		line++;
+	}
+	data.k = 7; data.v = "\"Book";
+	searchLinear(data);
 	data.k = 1; data.v = "melik";
+	insertLinear(data);
+	data.k = 2; data.v = "melil";
 	insertLinear(data);
 	data.k = 2; data.v = "melik";
 	insertLinear(data);
@@ -82,8 +122,7 @@ int main()
 	data.k = 3; data.v = "biyik2";
 	insertLinear(data);
 
-	data.k = 2; data.v = "melik";
-	std::cout << searchLinear(data) << std::endl;
+
 
 
 	print();
