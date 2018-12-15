@@ -6,71 +6,155 @@
 #include <fstream>
 #include <sstream>
 
-// function definitions
-
 
 typedef struct veri {								//created a struct named veri
 	int k;											//it contains int k and string v
 	std::string v;
 }v;
 
-int hLinear(v data);								//Linear Probing Hash funciton		
-void insertLinear(v data);							//Insert Function of Linear Probing Hash
-std::string searchLinear(v data);					//Search Function of Linear Probing
-void print();										//Print the Hash table function
+int i;												//number of collisions
 
-v a[150];											//created a variable named a type veri
+// function definitions
+int hLinearm1(v data);								//Linear Probing Hash funciton		
+int hLinearm2(v data);
+int hDoublem1(v data,int i);
+int h1m1(int k);
+int h1m2(int k);
+int hDoublem2(v data,int i);
+int h2m1(int k);
+int h2m2(int k);
+void insertLinearm1(v data);						//Insert Function of Linear Probing Hash
+void insertLinearm2(v data);
+void insertDoublem1(v data);
+void insertDoublem2(v data);
+std::string searchLinearm1(v data);					//Search Function of Linear Probing
+std::string searchLinearm2(v data);
+std::string searchDoublem1(v data);
+std::string searchDoublem2(v data);
+void printm1();										//Print the Hash table function
+void printm2();
 
-int hLinear(v data) {								//hash function
-	int iv = 0;										//int value definiton
-	int hashed;										//output of hash function
-	int converted;									//string to int converted
-	for (int i = 0; i < data.v.length(); i++) {
-		converted = data.v[i];
-		iv = iv + converted;						//int value of string
-	}
+v table1[17863];
+v table2[21929];									//created a variable named table type veri
 
-	hashed = (data.k + iv) % 150;
+int hLinearm1(v data) {								
+	int hashed;										
+	hashed = (data.k +i) % 17863;
 	return hashed;									// hashed string and key pairs
 }
+int hLinearm2(v data) {
+	int hashed;
+	hashed = (data.k + i) % 21929;
+	return hashed;
+}
 
-void insertLinear(v data) {							//Insert Function of Linear Probing Hash
-	if (a[hLinear(data)].k == -1) {					//Empty slot case
-		a[hLinear(data)] = data;
+int hDoublem1(v data, int i) {
+	int key = data.k;
+	return (h1m1(key) + i * h2m1(key)) % 17863;
+}
+int h1m1(int k) {
+	return k % 17863;
+}
+int h2m1(int k) {
+	return 23 - (23 % 17863);
+}
+
+int hDoublem2(v data, int i) {
+	int key = data.k;
+	return (h1m2(key) + i * h2m2(key)) % 21929;
+}
+int h1m2(int k) {
+	return k % 21929;
+}
+int h2m2(int k) {
+	return 23 - (23 % 21929);
+}
+
+
+void insertLinearm1(v data) {					//Insert Function of Linear Probing Hash
+	if (table1[hLinearm1(data)].k == -1) {		//Empty slot case
+	table1[hLinearm1(data)] = data;
 	}
-	else {											//full slot case
-		int indis = hLinear(data);
-		while (a[indis].k != -1) {
+	else {										//full slot case
+		int indis = hLinearm1(data);
+		while (table1[indis].k != -1) {
 			indis++;
-			if (indis > 149) {
+			i++;
+			if (indis > 17863) {
+			indis = 0;
+			}
+		}
+	table1[indis]= data;
+	}
+}
+
+void insertLinearm2(v data) {					//Insert Function of Linear Probing Hash
+	if (table2[hLinearm2(data)].k == -1) {		//Empty slot case
+		table2[hLinearm2(data)] = data;
+	}
+	else {										//full slot case
+		int indis = hLinearm2(data);
+		while (table2[indis].k != -1) {
+			indis++;
+			i++;
+			if (indis > 21929) {
 				indis = 0;
 			}
 		}
-		a[indis].k = data.k;
+		table2[indis] = data;
 	}
-
 }
 
-//olmayan data
-//doðru yerdeki data
-//collision olmuþ data
+void insertDoublem1(v data) {
+	if (table1[hDoublem1(data,i)].k == -1) {		//Empty slot case
+		table1[hDoublem1(data,i)] = data;
+	}
+	else {										//full slot case
+		int indis = hDoublem1(data,i);
+		while (table1[indis].k != -1) {
+			indis++;
+			i++;
+			if (indis > 17863) {
+				indis = 0;
+			}
+		}
+		table1[indis] = data;
+	}
+}
 
-std::string searchLinear(v data) {					//Search Function of Linear Probing Hash
-	if (a[hLinear(data)].k == -1) {					//non existing data
+void insertDoublem2(v data) {
+	if (table2[hDoublem2(data,i)].k == -1) {		//Empty slot case
+		table2[hDoublem2(data,i)] = data;
+	}
+	else {										//full slot case
+		int indis = hDoublem2(data,i);
+		while (table2[indis].k != -1) {
+			indis++;
+			i++;
+			if (indis > 21929) {
+				indis = 0;
+			}
+		}
+		table2[indis] = data;
+	}
+}
+
+std::string searchLinearm1(v data) {						//Search Function of Linear Probing Hash
+	if (table1[hLinearm1(data)].k == -1) {					//non existing data
 		printf("olmayan deger araniyor");
 		return "-1";
 	}
-	//Not Collision and existing data
-	else if (a[hLinear(data)].k == data.k && a[hLinear(data)].v == data.v) {
-		return a[hLinear(data)].v;
+
+	else if (table1[hLinearm1(data)].k == data.k && table1[hLinearm1(data)].v == data.v) {
+		return table1[hLinearm1(data)].v;
 	}
-	//Collision case
-	else if (a[hLinear(data)].k == data.k && a[hLinear(data)].v != data.v) {
-		int x = hLinear(data);
-		while (a[x].v != data.v) {					//Goes next slot until the value matches
+
+	else if (table1[hLinearm1(data)].k == data.k && table1[hLinearm1(data)].v != data.v) {
+		int x = hLinearm1(data);
+		while (table1[x].v != data.v) {					//Goes next slot until the value matches
 			x = x++;
 		}
-		return a[x].v;
+		return table1[x].v;
 	}
 	//Error case
 	else {
@@ -79,21 +163,107 @@ std::string searchLinear(v data) {					//Search Function of Linear Probing Hash
 	return "-1";
 }
 
-void print() {										//Print the table function
-	for (int i = 0; i < 150; i++) {
-		std::cout << a[i].k << " " << a[i].v << std::endl;
+std::string searchLinearm2(v data) {						//Search Function of Linear Probing Hash
+	if (table2[hLinearm2(data)].k == -1) {					//non existing data
+		printf("olmayan deger araniyor");
+		return "-1";
 	}
 
+	else if (table2[hLinearm2(data)].k == data.k && table2[hLinearm2(data)].v == data.v) {
+		return table1[hLinearm2(data)].v;
+	}
+
+	else if (table1[hLinearm2(data)].k == data.k && table2[hLinearm2(data)].v != data.v) {
+		int x = hLinearm2(data);
+		while (table2[x].v != data.v) {					//Goes next slot until the value matches
+			x = x++;
+		}
+		return table2[x].v;
+	}
+	//Error case
+	else {
+		std::cout << "Error at search" << std::endl;
+	}
+	return "-1";
+}
+
+std::string searchDoublem1(v data) {
+	//Search Function of Linear Probing Hash
+	if (table1[hDoublem1(data, i)].k == -1) {					//non existing data
+		printf("olmayan deger araniyor");
+		return "-1";
+	}
+	//Not Collision and existing data
+	else if (table1[hDoublem1(data, i)].k == data.k && table1[hDoublem1(data, i)].v == data.v) {
+		return table1[hDoublem1(data, i)].v;
+	}
+	//Collision case
+	else if (table1[hDoublem1(data, i)].k == data.k && table1[hDoublem1(data, i)].v != data.v) {
+		int x = hDoublem1(data, i);
+		while (table1[x].v != data.v) {					//Goes next slot until the value matches
+			x = x++;
+		}
+		return table1[x].v;
+	}
+	//Error case
+	else {
+		std::cout << "Error at search" << std::endl;
+		return "-1";
+	}
+
+}
+
+std::string searchDoublem2(v data) {						//Search Function of Linear Probing Hash
+	if (table2[hDoublem2(data,i)].k == -1) {					//non existing data
+		printf("olmayan deger araniyor");
+		return "-1";
+	}
+	//Not Collision and existing data
+	else if (table2[hDoublem2(data,i)].k == data.k && table2[hDoublem2(data,i)].v == data.v) {
+		return table2[hDoublem2(data,i)].v;
+	}
+	//Collision case
+	else if (table2[hDoublem2(data,i)].k == data.k && table2[hDoublem2(data,i)].v != data.v) {
+		int x = hDoublem2(data,i);
+		while (table2[x].v != data.v) {					//Goes next slot until the value matches
+			x = x++;
+		}
+		return table2[x].v;
+	}
+	//Error case
+	else {
+		std::cout << "Error at search" << std::endl;
+		return "-1";
+	}
+	
+}
+
+
+
+
+
+void printm1() {											//Print the table function
+	for (int i = 0; i < 17865; i++) {
+		std::cout << table2[i].k << " " << table2[i].v << std::endl;
+	}
+	std::cout << "collision count " << i << std::endl;
+}
+
+void printm2() {											//Print the table function
+	for (int i = 0; i < 22000; i++) {
+		std::cout << table2[i].k << " " << table2[i].v << std::endl;
+	}
+	std::cout << "collision count " << i << std::endl;
 }
 
 int main()
 {
 	v data;
-	for (int i = 0; i < 150; i++) {					//default -1 added to every slot in table
-		a[i].k = -1;
+	for (int i = 0; i < 22000; i++) {					//default -1 added to every slot in table
+		table2[i].k = -1;
 	}
 	std::ifstream myfile;
-	myfile.open("vocabdeneme.txt");
+	myfile.open("vocab.txt");
 	if (!myfile.is_open()) {
 		std::cout << "Error cannot read from the file";
 	}
@@ -104,29 +274,14 @@ int main()
 		getline(myfile, vocab);
 		data.v = vocab;
 		data.k = line;
-		insertLinear(data);
+		insertDoublem2(data);
 		line++;
 	}
-	data.k = 7; data.v = "\"Book";
-	searchLinear(data);
-	data.k = 1; data.v = "melik";
-	insertLinear(data);
-	data.k = 2; data.v = "melil";
-	insertLinear(data);
-	data.k = 2; data.v = "melik";
-	insertLinear(data);
-	data.k = 2; data.v = "mehmet";
-	insertLinear(data);
-	data.k = 2; data.v = "biyik";
-	insertLinear(data);
-	data.k = 3; data.v = "biyik2";
-	insertLinear(data);
-
-
-
-
-	print();
-
+	
+	//printm1();
+	//printm2();
+	
+	
 
 	system("pause");
 	return 0;
